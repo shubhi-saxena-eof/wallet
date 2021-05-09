@@ -1,4 +1,4 @@
-package wallet.entity;
+package wallet.model;
 
 public enum Currency {
 

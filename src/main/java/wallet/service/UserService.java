@@ -20,7 +20,7 @@ public class UserService {
     }
 
     public User createUser(CreateUserRequest request) throws InvalidInputException {
-        validationService.validate(CreateUserRequest.class, request);
+        validationService.validate(request);
         User user = getNewUser(request);
         return userRepository.save(user);
     }
