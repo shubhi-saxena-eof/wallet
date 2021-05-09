@@ -26,8 +26,8 @@ public class TransactionService {
     private final WalletRepository walletRepository;
     private final TransactionRepository transactionRepository;
     private final WalletUtil walletUtil;
-    @Value("${wallet.transaction.maxretries}")
-    private int maxTries;
+//    @Value("${wallet.transaction.maxretries}")
+    private final int MAX_RETRIES = 3;
 
     public TransactionService(ValidationService validationService, WalletRepository walletRepository, TransactionRepository transactionRepository, WalletUtil walletUtil) {
         this.validationService = validationService;
@@ -45,7 +45,7 @@ public class TransactionService {
                 markFailed(transaction);
                 throw e;
             } catch (Exception e) {
-                if(tryCount == maxTries) {
+                if(tryCount == MAX_RETRIES) {
                     markFailed(transaction);
                     throw e;
                 }
@@ -63,6 +63,7 @@ public class TransactionService {
     }
 
     private Transaction markSuccess(Transaction transaction) {
+        transaction.setSettlementDateTime(walletUtil.getCurrentTime());
         transaction.setStatus(TransactionStatus.SUCCESS);
         return transactionRepository.save(transaction);
     }
