@@ -15,5 +15,5 @@ public interface WalletRepository extends JpaRepository<Wallet, UUID> {
     @Override
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     Optional<Wallet> findById(UUID uuid);
-    Optional<Wallet> findByUser(UUID uuid);
+    Optional<Wallet> findByUserId(UUID uuid);
 }

@@ -24,7 +24,7 @@ public class Wallet {
     @NotNull
     private Currency currency;
     @OneToOne
-    @JoinColumn(unique = true)
+    @JoinColumn(unique = true, name = "user_id")
     @NotNull
     private User user;
 

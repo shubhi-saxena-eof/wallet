@@ -36,13 +36,23 @@ public class TransactionService {
         this.walletUtil = walletUtil;
     }
 
-    @Transactional
-    public Transaction transact(InitiateTransactionRequest request) throws TransactAPIException, InvalidInputException, InsufficientBalanceException {
-        Wallet sourceWallet = getWallet(request.getSourceWalletID());
-        Wallet targetWallet = getWallet(request.getTargetWalletID());
-        validationService.validate(request, sourceWallet, targetWallet);
-        Transaction transaction = initiateTransaction(request, sourceWallet, targetWallet);
-        return executeTransaction(transaction, request, sourceWallet, targetWallet);
+    public Transaction transact(InitiateTransactionRequest request) throws InvalidInputException, InsufficientBalanceException {
+        Transaction transaction = initiateTransaction(request);
+        for(int tryCount = 1; true; tryCount++) {
+            try {
+                return executeTransaction(request, transaction);
+            } catch (InvalidInputException | InsufficientBalanceException e) {
+                markFailed(transaction);
+                throw e;
+            } catch (Exception e) {
+                if(tryCount == maxTries) {
+                    markFailed(transaction);
+                    throw e;
+                }
+                log.error("Transaction request {} failed - retrying", request,e);
+                markFailed(transaction);
+            }
+        }
     }
 
     private void markFailed(Transaction transaction) {
@@ -53,25 +63,18 @@ public class TransactionService {
     }
 
     private Transaction markSuccess(Transaction transaction) {
-        transaction.setSettlementDateTime(walletUtil.getCurrentTime());
         transaction.setStatus(TransactionStatus.SUCCESS);
         return transactionRepository.save(transaction);
     }
 
-    private Transaction executeTransaction(Transaction transaction, InitiateTransactionRequest request, Wallet sourceWallet, Wallet targetWallet) {
-        for(int tryCount = 1; true; tryCount++) {
-            try {
-                debitSource(request, sourceWallet);
-                creditTarget(request, targetWallet);
-                return markSuccess(transaction);
-            } catch (Exception e) {
-                if(tryCount == maxTries) {
-                    throw e;
-                }
-                //TODO log error
-                markFailed(transaction);
-            }
-        }
+    @Transactional
+    private Transaction executeTransaction(InitiateTransactionRequest request, Transaction transaction) throws InvalidInputException, InsufficientBalanceException {
+        Wallet sourceWallet = getWallet(request.getSourceWalletID());
+        Wallet targetWallet = getWallet(request.getTargetWalletID());
+        validationService.validate(request, sourceWallet, targetWallet);
+        debitSource(request, sourceWallet);
+        creditTarget(request, targetWallet);
+        return markSuccess(transaction);
     }
 
     private void creditTarget(InitiateTransactionRequest request, Wallet targetWallet) {
@@ -84,18 +87,18 @@ public class TransactionService {
         walletRepository.save(sourceWallet);
     }
 
-    private Transaction initiateTransaction(InitiateTransactionRequest request, Wallet sourceWallet, Wallet targetWallet) {
-        Transaction transaction = getNewTransaction(request, sourceWallet, targetWallet);
+    private Transaction initiateTransaction(InitiateTransactionRequest request) {
+        Transaction transaction = getNewTransaction(request);
         return transactionRepository.save(transaction);
     }
 
-    private Transaction getNewTransaction(InitiateTransactionRequest request, Wallet sourceWallet, Wallet targetWallet) {
+    private Transaction getNewTransaction(InitiateTransactionRequest request) {
         return new Transaction(
                 request.getAmount(),
                 Currency.valueOf(request.getCurrency()),
                 walletUtil.getCurrentTime(),
-                sourceWallet.getID(),
-                targetWallet.getID(),
+                request.getSourceWalletID(),
+                request.getTargetWalletID(),
                 TransactionStatus.PENDING
         );
     }

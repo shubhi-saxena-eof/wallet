@@ -39,9 +39,10 @@ public class ValidationService {
             throw new InvalidInputException(String.format("Initial balance amount %s is less than minimmum balance amount %s",
                     request.getInitialBalanceAmount(), request.getMinimumBalanceAmount()));
         }
-        if(walletRepository.findByUser(userID).isPresent()) {
+        if(walletRepository.findByUserId(userID).isPresent()) {
             throw new InvalidInputException(String.format("Wallet for user %s already exists.", userID));
         }
+        log.info("Validated wallet creation request {}", request);
     }
 
     void validate(InitiateTransactionRequest request, Wallet sourceWallet, Wallet targetWallet) throws InvalidInputException, InsufficientBalanceException {
@@ -60,12 +61,14 @@ public class ValidationService {
             throw new InsufficientBalanceException(String.format("Could not transact transaction %s. Balance %s is not sufficient. Minimum balance %s",
                     request, sourceWallet.getBalanceAmount(), sourceWallet.getMinimumBalanceAmount()));
         }
+        log.info("Validated transaction request {}", request);
     }
 
     private <T> void validateCurrency(String currency,T object) throws InvalidInputException {
         if(!supportedCurrencies.contains(currency)) {
             throw new InvalidInputException(String.format("Unknown currency %s in request %s", currency, object));
         }
+        log.info("Validated currency for request {}", object);
     }
 
 
@@ -73,5 +76,6 @@ public class ValidationService {
         if(userRepository.findByPhoneNumber(request.getPhoneNumber()).isPresent()) {
             throw new InvalidInputException("User with phone number already exists.");
         }
+        log.info("Validated user creation request");
     }
 }

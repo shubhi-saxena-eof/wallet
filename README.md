@@ -1,4 +1,4 @@
-# wallet
+# Wallet
 
 
 Requirements to run this locally -
