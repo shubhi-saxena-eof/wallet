@@ -1,5 +1,8 @@
 package wallet.entity;
 
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -8,6 +11,8 @@ import java.math.BigDecimal;
 import java.util.UUID;
 
 @Entity
+@NoArgsConstructor
+@Data
 public class Wallet {
 
     @Id
@@ -28,5 +33,17 @@ public class Wallet {
 
     public BigDecimal getBalanceAmount() {
         return balanceAmount;
+    }
+
+    public Currency getCurrency() {
+        return currency;
+    }
+
+    public BigDecimal getMinimumBalanceAmount() {
+        return minimumBalanceAmount;
+    }
+
+    public void setBalanceAmount(BigDecimal balanceAmount) {
+        this.balanceAmount = balanceAmount;
     }
 }

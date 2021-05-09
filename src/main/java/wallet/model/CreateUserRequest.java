@@ -7,13 +7,13 @@ public class CreateUserRequest {
     @NotBlank
     private String phoneNumber;
     @NotBlank
-    private String Name;
+    private String name;
 
     public String getPhoneNumber() {
         return phoneNumber;
     }
 
     public String getName() {
-        return Name;
+        return name;
     }
 }

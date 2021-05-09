@@ -1,14 +1,13 @@
 package wallet.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import wallet.entity.User;
 import wallet.exception.UserAPIException;
 import wallet.model.CreateUserRequest;
 import wallet.service.UserService;
+
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/user")
@@ -22,8 +21,8 @@ public class UserRestController {
     }
 
     @PostMapping(path = "/create")
-    private User createWallet(
-            @RequestBody CreateUserRequest request) throws UserAPIException {
+    private @ResponseBody User createWallet(
+            @RequestBody @Valid CreateUserRequest request) throws UserAPIException {
         try {
             return userService.createUser(request);
         } catch (Exception e) {

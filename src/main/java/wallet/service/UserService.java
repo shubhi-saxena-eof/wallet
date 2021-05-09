@@ -10,17 +10,14 @@ import wallet.repository.UserRepository;
 @Service
 public class UserService {
 
-    private final ValidationService validationService;
     private final UserRepository userRepository;
 
     @Autowired
-    public UserService(ValidationService validationService, UserRepository userRepository) {
-        this.validationService = validationService;
+    public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
     public User createUser(CreateUserRequest request) throws InvalidInputException {
-        validationService.validate(CreateUserRequest.class, request);
         User user = getNewUser(request);
         return userRepository.save(user);
     }
