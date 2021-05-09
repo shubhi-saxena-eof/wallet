@@ -11,8 +11,8 @@ public class Transaction {
     private Currency currency;
     private ZonedDateTime initiationDateTime;
     private ZonedDateTime settlementDateTime;
-    private Wallet wallet;
-    private DebitCreditIndicator debitCreditIndicator;
+    private Wallet sourceWallet;
+    private Wallet targetWallet;
     private TransactionStatus status;
 
 }
