@@ -4,9 +4,8 @@ package wallet.entity;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 import java.util.UUID;
 
 @Entity
@@ -17,7 +16,10 @@ public class User {
     @Id
     @GeneratedValue
     private UUID id;
+    @Column(unique = true)
+    @NotBlank
     private String phoneNumber;
+    @NotBlank
     private String Name;
     //We can have additional fields like country code, address, ID proofs etc.
 

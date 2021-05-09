@@ -1,7 +1,10 @@
 package wallet.model;
 
+import lombok.Data;
+
 import javax.validation.constraints.NotBlank;
 
+@Data
 public class CreateUserRequest {
 
     @NotBlank
@@ -9,11 +12,4 @@ public class CreateUserRequest {
     @NotBlank
     private String name;
 
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public String getName() {
-        return name;
-    }
 }

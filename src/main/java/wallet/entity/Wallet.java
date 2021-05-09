@@ -2,11 +2,10 @@ package wallet.entity;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import wallet.model.Currency;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.UUID;
 
@@ -18,10 +17,15 @@ public class Wallet {
     @Id
     @GeneratedValue
     private UUID ID;
+    @NotNull
     private BigDecimal balanceAmount;
+    @NotNull
     private BigDecimal minimumBalanceAmount;
+    @NotNull
     private Currency currency;
-    @ManyToOne
+    @OneToOne
+    @JoinColumn(unique = true)
+    @NotNull
     private User user;
 
     public Wallet(BigDecimal balanceAmount, BigDecimal minimumBalanceAmount, Currency currency, User user) {
@@ -31,19 +35,4 @@ public class Wallet {
         this.user = user;
     }
 
-    public BigDecimal getBalanceAmount() {
-        return balanceAmount;
-    }
-
-    public Currency getCurrency() {
-        return currency;
-    }
-
-    public BigDecimal getMinimumBalanceAmount() {
-        return minimumBalanceAmount;
-    }
-
-    public void setBalanceAmount(BigDecimal balanceAmount) {
-        this.balanceAmount = balanceAmount;
-    }
 }

@@ -3,9 +3,9 @@ package wallet.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import wallet.entity.Currency;
+import wallet.model.Currency;
 import wallet.entity.Transaction;
-import wallet.entity.TransactionStatus;
+import wallet.model.TransactionStatus;
 import wallet.entity.Wallet;
 import wallet.exception.InsufficientBalanceException;
 import wallet.exception.InvalidInputException;
@@ -38,7 +38,6 @@ public class TransactionService {
 
     @Transactional
     public Transaction transact(InitiateTransactionRequest request) throws TransactAPIException, InvalidInputException, InsufficientBalanceException {
-
         Wallet sourceWallet = getWallet(request.getSourceWalletID());
         Wallet targetWallet = getWallet(request.getTargetWalletID());
         validationService.validate(request, sourceWallet, targetWallet);
@@ -95,8 +94,8 @@ public class TransactionService {
                 request.getAmount(),
                 Currency.valueOf(request.getCurrency()),
                 walletUtil.getCurrentTime(),
-                sourceWallet,
-                targetWallet,
+                sourceWallet.getID(),
+                targetWallet.getID(),
                 TransactionStatus.PENDING
         );
     }

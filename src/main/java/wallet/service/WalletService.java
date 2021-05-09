@@ -2,7 +2,7 @@ package wallet.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import wallet.entity.Currency;
+import wallet.model.Currency;
 import wallet.entity.User;
 import wallet.entity.Wallet;
 import wallet.exception.InvalidInputException;
@@ -28,7 +28,7 @@ public class WalletService {
     }
 
     public Wallet createWallet(UUID userID, CreateWalletRequest request) throws InvalidInputException {
-        validationService.validate(request);
+        validationService.validate(request, userID);
         User user = userRepository.findById(userID)
                 .orElseThrow(() -> new InvalidInputException(String.format("Input user with id %s does not exist", userID)));
         Wallet wallet = getNewWallet(user, request);
@@ -44,7 +44,7 @@ public class WalletService {
 
     private Wallet getNewWallet(User user, CreateWalletRequest request) {
         return new Wallet(
-            BigDecimal.ZERO,
+            request.getInitialBalanceAmount(),
             request.getMinimumBalanceAmount(),
             Currency.valueOf(request.getCurrency()),
             user
